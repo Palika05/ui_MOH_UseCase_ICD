@@ -242,6 +242,79 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
+.badge-danger {
+  background: var(--status-incorrect-bg);
+  color: var(--status-incorrect-text);
+  border: 1px solid var(--status-incorrect-border);
+}
+
+.badge-warning {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+  border: 1px solid var(--status-pending-border);
+}
+
+.stats-counter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pane-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.results-stats-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+.stat-badge.stat-correct {
+  background: var(--status-correct-bg);
+  color: var(--status-correct-text);
+  border: 1px solid var(--status-correct-border);
+}
+
+.stat-badge.stat-incorrect {
+  background: var(--status-incorrect-bg);
+  color: var(--status-incorrect-text);
+  border: 1px solid var(--status-incorrect-border);
+}
+
+.stat-badge.stat-pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-text);
+  border: 1px solid var(--status-pending-border);
+}
+
+@keyframes countPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); color: #059669; }
+  100% { transform: scale(1); }
+}
+
+.count-changed {
+  display: inline-block;
+  animation: countPop 0.4s ease-out;
+}
+
 .dot-pulse {
   width: 7px;
   height: 7px;

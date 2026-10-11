@@ -113,7 +113,7 @@
         <div class="step-icon">5</div>
         <div class="step-details">
           <div class="step-title">5 Review</div>
-          <div class="step-subtitle">Verify + save</div>
+          <div class="step-subtitle" id="step-subtitle-review">2/4 Correct (1 pending)</div>
         </div>
       </div>
     </div>
@@ -346,7 +346,18 @@
           <span class="strip-facility">Khoula Hospital Orthopedic &amp; Trauma Centre</span>
         </div>
         <div class="strip-right">
-          <span class="badge badge-counter" id="badge-total-items">4 Entities Extracted</span>
+          <div class="stats-counter-group" id="stats-counter-group">
+            <span class="badge badge-counter" id="badge-total-items">4 Entities</span>
+            <span class="badge badge-success" id="badge-correct-count" title="Audited as Correct">
+              ✓ <strong id="count-correct-val">2</strong> Correct
+            </span>
+            <span class="badge badge-danger" id="badge-incorrect-count" title="Flagged as Incorrect">
+              ✕ <strong id="count-incorrect-val">1</strong> Incorrect
+            </span>
+            <span class="badge badge-warning" id="badge-pending-count" title="Pending clinical sign-off">
+              ⚠ <strong id="count-pending-val">1</strong> Pending
+            </span>
+          </div>
           <button class="btn btn-ghost" onclick="toggleFallbackHighlightState()" id="btn-toggle-fallback">
             Toggle Bounding-Box Availability
           </button>
@@ -361,7 +372,20 @@
           
           <div class="pane-header">
             <div>
-              <h2 class="pane-title">Results</h2>
+              <div class="pane-title-row">
+                <h2 class="pane-title">Results</h2>
+                <div class="results-stats-bar" id="results-stats-bar">
+                  <span class="stat-badge stat-correct" id="stat-correct-pill">
+                    <span class="chip-icon">✓</span> <strong id="stat-correct-num">2</strong> Correct
+                  </span>
+                  <span class="stat-badge stat-incorrect" id="stat-incorrect-pill">
+                    <span class="chip-icon">✕</span> <strong id="stat-incorrect-num">1</strong> Incorrect
+                  </span>
+                  <span class="stat-badge stat-pending" id="stat-pending-pill">
+                    <span class="chip-icon">⚠</span> <strong id="stat-pending-num">1</strong> Pending
+                  </span>
+                </div>
+              </div>
               <p class="pane-sub">Review clinical extraction entities and verified ontology codes</p>
             </div>
             <div class="table-quick-filters">

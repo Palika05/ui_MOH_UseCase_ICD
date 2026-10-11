@@ -27,6 +27,7 @@ const state = {
       page: 37,
       coords: '[Page: 37, X: 140, Y: 380, W: 240, H: 26]',
       decision: 'Pending',
+      savedDecision: 'Pending',
       comment: '',
       reason: ''
     },
@@ -42,6 +43,7 @@ const state = {
       page: 37,
       coords: '[Page: 37, X: 140, Y: 440, W: 220, H: 24]',
       decision: 'Correct',
+      savedDecision: 'Correct',
       comment: 'Verified against operative surgical report paragraph 2.',
       reason: ''
     },
@@ -57,6 +59,7 @@ const state = {
       page: 38,
       coords: '[Page: 38, X: 120, Y: 510, W: 180, H: 22]',
       decision: 'Incorrect',
+      savedDecision: 'Incorrect',
       comment: 'Dose adjusted inpatient; outpatient discharge prescription discontinued.',
       reason: 'guideline'
     },
@@ -72,6 +75,7 @@ const state = {
       page: 37,
       coords: '[Page: 37, X: 140, Y: 485, W: 195, H: 22]',
       decision: 'Correct',
+      savedDecision: 'Correct',
       comment: 'Long-term comorbidity documented in medical history.',
       reason: ''
     }
@@ -91,6 +95,7 @@ const state = {
 // DOM INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
   setupKeyboardListeners();
+  updateDecisionCounts();
   window.addEventListener('resize', () => {
     if (state.currentScreen === 'review') {
       updateBoundingBoxPosition();
@@ -339,6 +344,7 @@ function markDecision(decisionType) {
   const rec = state.records[state.activeRowIndex];
   rec.decision = decisionType;
   markUnsaved();
+  updateDecisionCounts();
 
   const btnCorrect = document.getElementById('btn-decision-correct');
   const btnIncorrect = document.getElementById('btn-decision-incorrect');
@@ -387,6 +393,9 @@ function saveActiveDecision() {
     rec.reason = document.getElementById('select-incorrect-reason').value;
   }
 
+  // Commit saved state
+  rec.savedDecision = rec.decision;
+
   // Update table chip in DOM
   const chip = document.getElementById(`chip-${state.activeRowIndex}`);
   if (chip) {
@@ -401,6 +410,7 @@ function saveActiveDecision() {
 
   state.hasUnsavedChanges = false;
   hideUnsavedBanner();
+  updateDecisionCounts();
 
   // Visual confirmation feedback
   const saveBtn = document.getElementById('btn-save-decision');
@@ -415,9 +425,14 @@ function saveActiveDecision() {
 }
 
 function discardUnsavedChanges() {
+  const rec = state.records[state.activeRowIndex];
+  if (rec) {
+    rec.decision = rec.savedDecision || 'Pending';
+  }
   state.hasUnsavedChanges = false;
   hideUnsavedBanner();
   renderActiveRecord();
+  updateDecisionCounts();
 }
 
 // UNSAVED MODAL HANDLERS
@@ -433,8 +448,13 @@ function cancelRowSwitch() {
 
 function confirmDiscardAndSwitch() {
   document.getElementById('unsaved-modal').classList.add('hidden');
+  const rec = state.records[state.activeRowIndex];
+  if (rec) {
+    rec.decision = rec.savedDecision || 'Pending';
+  }
   state.hasUnsavedChanges = false;
   hideUnsavedBanner();
+  updateDecisionCounts();
 
   if (state.pendingRowIndex !== null) {
     commitRowSelection(state.pendingRowIndex);
@@ -448,6 +468,46 @@ function confirmDiscardAndSwitch() {
 function saveAndProceed() {
   saveActiveDecision();
   confirmDiscardAndSwitch();
+}
+
+// DYNAMIC DECISION & AUDIT COUNTERS
+function updateDecisionCounts() {
+  const total = state.records.length;
+  const correct = state.records.filter(r => r.decision === 'Correct').length;
+  const incorrect = state.records.filter(r => r.decision === 'Incorrect').length;
+  const pending = state.records.filter(r => r.decision !== 'Correct' && r.decision !== 'Incorrect').length;
+
+  const animateVal = (el, val) => {
+    if (!el) return;
+    if (el.textContent !== String(val)) {
+      el.textContent = val;
+      el.classList.remove('count-changed');
+      void el.offsetWidth; // trigger reflow for css animation
+      el.classList.add('count-changed');
+    }
+  };
+
+  // Nav Strip Badges
+  const badgeTotal = document.getElementById('badge-total-items');
+  if (badgeTotal) badgeTotal.textContent = `${total} Entities`;
+  animateVal(document.getElementById('count-correct-val'), correct);
+  animateVal(document.getElementById('count-incorrect-val'), incorrect);
+  animateVal(document.getElementById('count-pending-val'), pending);
+
+  // Results Header Stats Bar
+  animateVal(document.getElementById('stat-correct-num'), correct);
+  animateVal(document.getElementById('stat-incorrect-num'), incorrect);
+  animateVal(document.getElementById('stat-pending-num'), pending);
+
+  // Stepper Subtitle (Step 5 Review)
+  const stepReviewSub = document.getElementById('step-subtitle-review');
+  if (stepReviewSub) {
+    if (pending === 0) {
+      stepReviewSub.textContent = `All Audited (${correct} Correct, ${incorrect} Flagged)`;
+    } else {
+      stepReviewSub.textContent = `${correct}/${total} Correct (${pending} pending)`;
+    }
+  }
 }
 
 // QUICK FILTER TABLE BY STANDARD
